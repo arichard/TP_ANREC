@@ -9,7 +9,9 @@
 
 public class kmeans {
 	public static void main(String[] args) {
-	System.out.println("ok");	
+	Matrice X=new Matrice(14,12);
+	X.initTableau();
+	System.out.println(X.Tableau[3][4]);
 	}
 	/*
 	On a donc au départ p variables X1,X2,...,Xp et n individus. La composante j de l'individu i est notée Xi,j et se trouve à la j-ème colonne de la i-ème ligne.
