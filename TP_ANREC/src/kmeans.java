@@ -10,6 +10,13 @@ import java.util.ArrayList;
  */
 
 public class kmeans {
+	
+	public ArrayList<ArrayList<Double>> traitementTxt(String filename) {
+		ArrayList<ArrayList<Double>> matrice = new ArrayList<ArrayList<Double>>();
+		
+		return matrice;
+	}
+	
 	public static void main(String[] args) {
 		Matrice X = new Matrice(4, 4);
 		ArrayList<Integer> B = new ArrayList<Integer>();
