@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -10,14 +13,46 @@ import java.util.ArrayList;
  */
 
 public class kmeans {
-	
-	public ArrayList<ArrayList<Double>> traitementTxt(String filename) {
+
+	public ArrayList<ArrayList<Double>> traitementTxt(String filePath) {
 		ArrayList<ArrayList<Double>> matrice = new ArrayList<ArrayList<Double>>();
-		
+
+		try {
+			// Création du flux bufférisé sur un FileReader, immédiatement suivi
+			// par un try/finally, ce qui permet de ne fermer le flux QUE s'il
+			// le reader est correctement instancié (évite les
+			// NullPointerException)
+			BufferedReader buff = new BufferedReader(new FileReader(filePath));
+
+			try {
+				String line;
+				String[] temp;
+				int index = 0;
+
+				// Lecture du fichier ligne par ligne. Cette boucle se termine
+				// quand la méthode retourne la valeur null
+				while ((line = buff.readLine()) != null) {
+					temp = line.split("\\t");
+					for (int i = 0; i < temp.length; i++) {
+						matrice.get(index).add(Double.parseDouble(temp[i]));
+					}
+					index++;
+				}
+
+			} finally {
+				// dans tous les cas, on ferme nos flux
+				buff.close();
+			}
+		} catch (IOException ioe) {
+			// erreur de fermeture des flux
+			System.out.println("Erreur --" + ioe.toString());
+		}
+
 		return matrice;
 	}
-	
+
 	public static void main(String[] args) {
+		/*
 		Matrice X = new Matrice(4, 4);
 		ArrayList<Integer> B = new ArrayList<Integer>();
 		B.set(0, 1);
@@ -28,6 +63,7 @@ public class kmeans {
 		System.out.println(X.Tableau[3][3]);
 		X.copierTableau(A);
 		System.out.println(X.Tableau[0][1]);
+		*/
 	}
 	/*
 	 * On a donc au départ p variables X1,X2,...,Xp et n individus. La
