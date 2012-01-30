@@ -6,21 +6,12 @@ import java.util.ArrayList;
  * TP ANREC
  * @author Antoine RICHARD
  * @author Marc LAURENT
- *
+ * 
  */
 
 public class kmeans {
 	public static void main(String[] args) {
-	Matrice X=new Matrice(4,4);
-	ArrayList<Integer> B = new ArrayList<Integer>();
-	B.set(0, 1);
-	B.set(1, 2);
-	ArrayList<ArrayList<Integer>> A=new ArrayList<ArrayList<Integer>>(4);
-	A.set(0, B);
-	X.initTableau();
-	System.out.println(X.Tableau[3][3]);
-	X.copierTableau(A);
-	System.out.println(X.Tableau[0][1]);
+	
 	}
 	/*
 	On a donc au départ p variables X1,X2,...,Xp et n individus. La composante j de l'individu i est notée Xi,j et se trouve à la j-ème colonne de la i-ème ligne.
