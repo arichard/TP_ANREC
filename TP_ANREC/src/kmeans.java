@@ -40,19 +40,19 @@ public class kmeans {
 	 * @return
 	 */
 	public Matrice lancerAlgorithme() {
-		// On va regarder si le nombre de clusters souhaitﾎ n'est pas
-		// supﾎrieur au nombre d'individus
+		// On va regarder si le nombre de clusters souhaite n'est pas
+		// superieur au nombre d'individus
 		if (this.k > this.X.Tableau.get(0).size()) {
 			System.out
-					.println("Votre k est trop grand comparﾎ ﾈ votre nombre d'individus");
+					.println("Votre k est trop grand compare a votre nombre d'individus");
 			return this.X;
 		} else {
 			// On peut mettre l'algo ici :)
 
-			// noyauxClusters va contenir les reprﾎsentants de mes k premiers
+			// noyauxClusters va contenir les representants de mes k premiers
 			// clusters
 			Matrice noyauxClusters = new Matrice();
-			// Je choisis alﾎatoirement mes k premiers reprﾎsentants
+			// Je choisis aleatoirement mes k premiers representants
 			for (int i = 0; i < this.k; i++) {
 				int random = (int) (this.X.Tableau.get(0).size() * Math
 						.random());
@@ -74,10 +74,10 @@ public class kmeans {
 		ArrayList<ArrayList<Double>> matrice = null;
 
 		try {
-			// Crﾎation du flux buffﾎrisﾎ sur un FileReader,
-			// immﾎdiatement suivi
+			// Creation du flux bufferise sur un FileReader,
+			// immediatement suivi
 			// par un try/finally, ce qui permet de ne fermer le flux QUE s'il
-			// le reader est correctement instanciﾎ (ﾎvite les
+			// le reader est correctement instancie (evite les
 			// NullPointerException)
 			BufferedReader buffLignes = new BufferedReader(new FileReader(
 					filePath));
@@ -90,8 +90,8 @@ public class kmeans {
 				int index = 0;
 				int nbLignes = 0;
 
-				// on rﾎcupﾏre d'abord le nombre de lignes
-				// afin d'initialiser notre "matrice" ﾈ la bonne taille
+				// on recupere d'abord le nombre de lignes
+				// afin d'initialiser notre "matrice" a la bonne taille
 				while ((line = buffLignes.readLine()) != null) {
 					nbLignes++;
 				}
@@ -100,7 +100,7 @@ public class kmeans {
 				matrice = new ArrayList<ArrayList<Double>>(nbLignes);
 
 				// Lecture du fichier ligne par ligne. Cette boucle se termine
-				// quand la mﾎthode retourne la valeur null
+				// quand la m�thode retourne la valeur null
 				while ((line = buffDonnees.readLine()) != null) {
 					temp = line.split("\\t");
 					matrice.get(index) = new ArrayList<Double>(temp.length);
