@@ -2,24 +2,17 @@ import java.util.ArrayList;
 
 
 public class Matrice {
-	protected Integer[][] Tableau;
+	protected ArrayList<ArrayList<Double>> Tableau;
 	
-	public Matrice(int n,int p){
-		this.Tableau=new Integer[n][p];
+	public Matrice(){
+		this.Tableau=new ArrayList<ArrayList<Double>>();
 	}
 	
-	public void initTableau() {
-		for (int i=0;i<this.Tableau.length;i++) {
-			for (int j=0;j<this.Tableau[i].length;j++) {
-				this.Tableau[i][j]=0;
-			}
-		}
-	}
 	
-	public void copierTableau(ArrayList<ArrayList<Integer>> aCopier) {
+	public void copierTableau(ArrayList<ArrayList<Double>> aCopier) {
 		for (int j=0;j<aCopier.size();j++) {
 			for (int i=0;i<aCopier.get(j).size();i++){
-				this.Tableau[i][j]=aCopier.get(j).get(i);
+				this.Tableau.get(i).set(j,aCopier.get(i).get(j));
 			}
 			
 		}
