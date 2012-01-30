@@ -15,33 +15,47 @@ import java.util.ArrayList;
 public class kmeans {
 
 	public ArrayList<ArrayList<Double>> traitementTxt(String filePath) {
-		ArrayList<ArrayList<Double>> matrice = new ArrayList<ArrayList<Double>>();
 
+		ArrayList<ArrayList<Double>> matrice = null ;
+		
 		try {
 			// Création du flux bufférisé sur un FileReader, immédiatement suivi
 			// par un try/finally, ce qui permet de ne fermer le flux QUE s'il
 			// le reader est correctement instancié (évite les
 			// NullPointerException)
-			BufferedReader buff = new BufferedReader(new FileReader(filePath));
+			BufferedReader buffLignes = new BufferedReader(new FileReader(filePath));
+			BufferedReader buffDonnees = new BufferedReader(new FileReader(filePath));
+			String line;
 
 			try {
-				String line;
 				String[] temp;
 				int index = 0;
+				int nbLignes = 0;
+
+				// on récupère d'abord le nombre de lignes
+				// afin d'initialiser notre "matrice" à la bonne taille
+				while ((line = buffLignes.readLine()) != null) {
+					nbLignes++;
+				}
+				
+				// initialisation de la matrice
+				matrice = new ArrayList<ArrayList<Double>>(nbLignes);
 
 				// Lecture du fichier ligne par ligne. Cette boucle se termine
 				// quand la méthode retourne la valeur null
-				while ((line = buff.readLine()) != null) {
+				while ((line = buffDonnees.readLine()) != null) {
 					temp = line.split("\\t");
+					matrice.get(index) = new ArrayList<Double>(temp.length);
 					for (int i = 0; i < temp.length; i++) {
+						
 						matrice.get(index).add(Double.parseDouble(temp[i]));
 					}
 					index++;
 				}
 
 			} finally {
-				// dans tous les cas, on ferme nos flux
-				buff.close();
+				buffLignes.close();
+				buffDonnees.close();
 			}
 		} catch (IOException ioe) {
 			// erreur de fermeture des flux
@@ -52,18 +66,18 @@ public class kmeans {
 	}
 
 	public static void main(String[] args) {
+		ArrayList<ArrayList<Double>> testTxt;
+		kmeans testAlgo = new kmeans();
+		testTxt = testAlgo.traitementTxt("exemple1.txt");
+
 		/*
-		Matrice X = new Matrice(4, 4);
-		ArrayList<Integer> B = new ArrayList<Integer>();
-		B.set(0, 1);
-		B.set(1, 2);
-		ArrayList<ArrayList<Integer>> A = new ArrayList<ArrayList<Integer>>(4);
-		A.set(0, B);
-		X.initTableau();
-		System.out.println(X.Tableau[3][3]);
-		X.copierTableau(A);
-		System.out.println(X.Tableau[0][1]);
-		*/
+		 * Matrice X = new Matrice(4, 4); ArrayList<Integer> B = new
+		 * ArrayList<Integer>(); B.set(0, 1); B.set(1, 2);
+		 * ArrayList<ArrayList<Integer>> A = new
+		 * ArrayList<ArrayList<Integer>>(4); A.set(0, B); X.initTableau();
+		 * System.out.println(X.Tableau[3][3]); X.copierTableau(A);
+		 * System.out.println(X.Tableau[0][1]);
+		 */
 	}
 	/*
 	 * On a donc au départ p variables X1,X2,...,Xp et n individus. La
