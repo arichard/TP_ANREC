@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 /**
  * 
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 
 public class kmeans {
 	public static void main(String[] args) {
-	
+	Matrice X = new Matrice();
 	}
 	/*
 	On a donc au départ p variables X1,X2,...,Xp et n individus. La composante j de l'individu i est notée Xi,j et se trouve à la j-ème colonne de la i-ème ligne.
