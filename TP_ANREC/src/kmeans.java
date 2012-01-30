@@ -14,17 +14,75 @@ import java.util.ArrayList;
 
 public class kmeans {
 
+	protected Matrice X;
+	protected int k;
+
+	/**
+	 * Constructeur par dfaut
+	 */
+	public kmeans() {
+	}
+
+	/**
+	 * Constructeur
+	 * 
+	 * @param X
+	 * @param k
+	 */
+	public kmeans(Matrice X, int k) {
+		this.X = X;
+		this.k = k;
+	}
+
+	/**
+	 * Mthode de lancement de l'algorithme
+	 * 
+	 * @return
+	 */
+	public Matrice lancerAlgorithme() {
+		// On va regarder si le nombre de clusters souhaitï¾ n'est pas
+		// supï¾rieur au nombre d'individus
+		if (this.k > this.X.Tableau.get(0).size()) {
+			System.out
+					.println("Votre k est trop grand comparï¾ ï¾ˆ votre nombre d'individus");
+			return this.X;
+		} else {
+			// On peut mettre l'algo ici :)
+
+			// noyauxClusters va contenir les reprï¾sentants de mes k premiers
+			// clusters
+			Matrice noyauxClusters = new Matrice();
+			// Je choisis alï¾atoirement mes k premiers reprï¾sentants
+			for (int i = 0; i < this.k; i++) {
+				int random = (int) (this.X.Tableau.get(0).size() * Math
+						.random());
+				System.out.println(random);
+			}
+			return this.X;
+		}
+	}
+
+	/**
+	 * Mthode prenant en paramtre un fichier texte contenant un tableau de
+	 * donnes et en sortant une ArrayList<ArrayList<Double>>
+	 * 
+	 * @param filePath
+	 * @return
+	 */
 	public ArrayList<ArrayList<Double>> traitementTxt(String filePath) {
 
-		ArrayList<ArrayList<Double>> matrice = null ;
-		
+		ArrayList<ArrayList<Double>> matrice = null;
+
 		try {
-			// Cration du flux buffris sur un FileReader, immdiatement suivi
+			// Crï¾ation du flux buffï¾risï¾ sur un FileReader,
+			// immï¾diatement suivi
 			// par un try/finally, ce qui permet de ne fermer le flux QUE s'il
-			// le reader est correctement instanci (vite les
+			// le reader est correctement instanciï¾ (ï¾vite les
 			// NullPointerException)
-			BufferedReader buffLignes = new BufferedReader(new FileReader(filePath));
-			BufferedReader buffDonnees = new BufferedReader(new FileReader(filePath));
+			BufferedReader buffLignes = new BufferedReader(new FileReader(
+					filePath));
+			BufferedReader buffDonnees = new BufferedReader(new FileReader(
+					filePath));
 			String line;
 
 			try {
@@ -32,22 +90,22 @@ public class kmeans {
 				int index = 0;
 				int nbLignes = 0;
 
-				// on rcupre d'abord le nombre de lignes
-				// afin d'initialiser notre "matrice" ˆ la bonne taille
+				// on rï¾cupï¾re d'abord le nombre de lignes
+				// afin d'initialiser notre "matrice" ï¾ˆ la bonne taille
 				while ((line = buffLignes.readLine()) != null) {
 					nbLignes++;
 				}
-				
+
 				// initialisation de la matrice
 				matrice = new ArrayList<ArrayList<Double>>(nbLignes);
 
 				// Lecture du fichier ligne par ligne. Cette boucle se termine
-				// quand la mthode retourne la valeur null
+				// quand la mï¾thode retourne la valeur null
 				while ((line = buffDonnees.readLine()) != null) {
 					temp = line.split("\\t");
 					matrice.get(index) = new ArrayList<Double>(temp.length);
 					for (int i = 0; i < temp.length; i++) {
-						
+
 						matrice.get(index).add(Double.parseDouble(temp[i]));
 					}
 					index++;
@@ -65,6 +123,9 @@ public class kmeans {
 		return matrice;
 	}
 
+	/**
+	 * main
+	 */
 	public static void main(String[] args) {
 		ArrayList<ArrayList<Double>> testTxt;
 		kmeans testAlgo = new kmeans();
@@ -78,64 +139,7 @@ public class kmeans {
 		 * System.out.println(X.Tableau[3][3]); X.copierTableau(A);
 		 * System.out.println(X.Tableau[0][1]);
 		 */
+
 	}
-	/*
-	 * On a donc au dpart p variables X1,X2,...,Xp et n individus. La
-	 * composante j de l'individu i est note Xi,j et se trouve ˆ la j-me
-	 * colonne de la i-me ligne.
-	 * 
-	 * Algorithme du k-means :
-	 * 
-	 * Paramtres en entre : Matrice X(n,p), entier naturel k Paramtres en
-	 * sortie : Matrice n lignes, p+1 colonnes o la dernire colonne traduit
-	 * l'affectation du vecteur individu ˆ un des k clusters
-	 * 
-	 * Debut
-	 * 
-	 * // 1re itration // Slectionner k individus (au hasard par ex) ˆ partir
-	 * de la matrice X. Ces k individus sont les reprsentants des k clusters
-	 * 
-	 * CheckChange <-- (true,true,...,true) (vecteur de n lignes)
-	 * 
-	 * // Cration et remplissage de la matrice M contenant nos donnes et
-	 * l'attribution d'un individu ˆ un cluser (dernire colonne) M =
-	 * matrice(n,p+1) Pour i=0 ˆ n Pour j=0 ˆ p M(i,j) = X(i,j) Fin pour Fin
-	 * pour Pour i=0 ˆ n M(i,p+1)=0 Fin pour
-	 * 
-	 * // matrice des centres de gravit des k clusters K = matrice(k,p)
-	 * 
-	 * Tant que (CheckChange != (false,false,...,false))
-	 * 
-	 * // Affecter les n individus aux k clusters :
-	 * 
-	 * Pour i=0 ˆ n-1 VecteurDistance <-- (0,0) distance <-- 0 OldCluster <-- -1
-	 * 
-	 * Pour j=0 ˆ k-1 // Calcul de la distance euclidienne entre l'individu X(j)
-	 * et le barycentre du cluster j K(j) distance <-- |X(j)-K(j)| // On va voir
-	 * si la nouvelle distance est plus petite que la plus petite de toutes les
-	 * distances prcdentes Si j=1 alors VecteurDistance(x) = distance
-	 * VecteurDistance(y) = j Sinon si ((distance) < VecteurDistance(x)) alors
-	 * VecteurDistance(x) = distance VecteurDistance(y) = j Fin si Fin pour
-	 * 
-	 * // Attribuer l'individu ˆ son (nouveau) cluster // cad ajouter ˆ la
-	 * dernire colonne de la matrice M l'indice du cluster OldCluster <--
-	 * M(i,p+1) M(i,p+1) <-- VecteurDistance(y) // Regarder si l'indice du
-	 * cluster a chang // Si oui, CheckChange(i) = true | Si non,
-	 * CheckChange(i) = false Boolean CheckChange(i) <--
-	 * isDifferent(Oldcluster,VecteurDistance(y))
-	 * 
-	 * Fin pour
-	 * 
-	 * // Calcul des k nouveaux centres de gravit
-	 * 
-	 * Pour j=0 ˆ k-1 Nbindividus <-- 0 Somme <-- (0,0,...,0) //(1 ligne, p
-	 * colonnes) Pour i=0 ˆ n-1 Si (M(i,p+1) = j) alors Pour l=0 ˆ p-1 Somme(l)
-	 * = Somme(l) + M(i,l) NbIndividus++; Fin pour Fin si Fin pour Pour l=0 ˆ
-	 * p-1 K(j,l) <-- Somme(l) / NbIndividus Fin pour Fin pour
-	 * 
-	 * Fin Tant que
-	 * 
-	 * Fin
-	 */
 
 }
