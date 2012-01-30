@@ -103,7 +103,7 @@ public class kmeans {
 				// quand la méthode retourne la valeur null
 				while ((line = buffDonnees.readLine()) != null) {
 					temp = line.split("\\t");
-					matrice.get(index) = new ArrayList<Double>(temp.length);
+					//matrice.get(index) = new ArrayList<Double>(temp.length);
 					for (int i = 0; i < temp.length; i++) {
 
 						matrice.get(index).add(Double.parseDouble(temp[i]));
