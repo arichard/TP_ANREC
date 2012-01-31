@@ -35,6 +35,7 @@ public class Test {
 		for (int i=0;i<Salut.size();i++) {
 			System.out.println(Salut.get(i).get(0)+" "+Salut.get(i).get(1)+" "+Salut.get(i).get(2));
 		}
+		monAlgorithme.graphique(Salut, "salut");
 	}
 
 }

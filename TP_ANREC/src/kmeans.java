@@ -46,7 +46,9 @@ public class kmeans {
 	/**
 	 * Méthode de lancement de l'algorithme
 	 * 
-	 * @return
+	 * @return ArrayList<ArrayList<Double>> : matrice où chaque ligne est un
+	 *         vecteur individu et la dernière colonne le numéro du cluster
+	 *         auquel appartient ledit individu
 	 */
 	public ArrayList<ArrayList<Double>> lancerAlgorithme() {
 		// On va regarder si le nombre de clusters souhaité n'est pas
@@ -56,11 +58,6 @@ public class kmeans {
 					.println("Votre k est trop grand compare a votre nombre d'individus");
 			return this.Matrice;
 		} else {
-			System.out.println("Matrice X :");
-			for (int i = 0; i < this.Matrice.size(); i++) {
-				System.out.println(this.Matrice.get(i).get(0) + " "
-						+ this.Matrice.get(i).get(1));
-			}
 			// On peut mettre l'algo ici :)
 
 			// On initialise noyauxClusters qui va contenir les représentants de
@@ -75,12 +72,7 @@ public class kmeans {
 					noyauxClusters.add(this.Matrice.get(random));
 				}
 			}
-			System.out.println("\n");
-			System.out.println("Matrice noyauxClusters :");
-			for (int i = 0; i < noyauxClusters.size(); i++) {
-				System.out.println(noyauxClusters.get(i).get(0) + " "
-						+ noyauxClusters.get(i).get(1));
-			}
+
 			// Voila, notre noyauxClusters contient les k individus distincts
 			// représentant les k premiers clusters
 
@@ -93,11 +85,6 @@ public class kmeans {
 			for (int i = 0; i < this.Matrice.size(); i++) {
 				CheckChange.add(true);
 			}
-			System.out.println("\n");
-			System.out.println("Matrice CheckChange :");
-			System.out.println(CheckChange.get(0) + " " + CheckChange.get(1)
-					+ " " + CheckChange.get(2) + " " + CheckChange.get(3) + " "
-					+ CheckChange.get(4) + " " + CheckChange.get(5));
 
 			/*
 			 * Création et remplissage de la matrice M contenant nos données
@@ -109,12 +96,7 @@ public class kmeans {
 				M.add(this.Matrice.get(i)); // Nos données
 				M.get(i).add(0.); // L'appartenance à un cluster
 			}
-			System.out.println("\n");
-			System.out.println("Matrice M :");
-			for (int i = 0; i < M.size(); i++) {
-				System.out.println(M.get(i).get(0) + " " + M.get(i).get(1)
-						+ " " + M.get(i).get(2));
-			}
+
 			// On lance la boucle déterminant l'appartenance pour chaque
 			// individu à un cluster
 
@@ -146,12 +128,7 @@ public class kmeans {
 							VecteurDistance.set(0, distance);
 							VecteurDistance.set(1, (double) j);
 						}
-						System.out.println("\n Distance de " + i
-								+ " par rapport  " + j + " :" + distance);
 					}
-					System.out.println("VecteurDistance :"
-							+ VecteurDistance.get(0) + " "
-							+ VecteurDistance.get(1));
 
 					// VecteurDistance contient maintenant l'indice du cluster
 					// auquel devrait appartenir l'individu (et sa
@@ -167,12 +144,7 @@ public class kmeans {
 					CheckChange.set(i,
 							(OldCluster - VecteurDistance.get(1)) != 0);
 				}
-				System.out.println("\n");
-				System.out.println("Matrice CheckChange :");
-				System.out.println(CheckChange.get(0) + " "
-						+ CheckChange.get(1) + " " + CheckChange.get(2) + " "
-						+ CheckChange.get(3) + " " + CheckChange.get(4) + " "
-						+ CheckChange.get(5));
+
 				// On va maintenant calculer les k nouveaux centres de gravité
 				for (int j = 0; j < this.k; j++) {
 					// Nbindividus va representer le nombre d'individus dans le
@@ -211,13 +183,75 @@ public class kmeans {
 	}
 
 	/**
+	 * Méthode affichant un nuage de points d'une matrice traitée avec la
+	 * bibliothèque JFreechart
+	 * 
+	 * @param matrice
+	 *            : matrice résultant du traitement avec l'algorithme k-means
+	 * @param fileUser
+	 *            : nom du fichier PNG souhaité en sortie
+	 */
+	public void graphique(ArrayList<ArrayList<Double>> matrice, String fileUser) {
+		// variables locales
+		int i, j, cluster;
+		XYSeries series[] = new XYSeries[this.k];
+		String name, title, file;
+
+		// création des différentes séries selon le nombre de cluster souhaité
+		for (i = 0; i < this.k; i++) {
+			name = "Cluster n° " + i;
+			series[i] = new XYSeries(name);
+		}
+
+		// récupérer les coordonnées de chaque individu
+		for (j = 0; j < matrice.size(); j++) {
+			// on récupère le numéro du cluster
+			cluster = (int) matrice.get(j).get(matrice.get(j).size() - 1)
+					.intValue();
+			// on récupère les coordonnées X et Y de l'individu
+			// et on les ajoute à la bonne série
+			series[cluster].add(matrice.get(j).get(0), matrice.get(j).get(1));
+		}
+
+		// création du XYDataset contenant toutes les séries
+		XYSeriesCollection xyDataset = new XYSeriesCollection();
+		for (i = 0; i < this.k; i++) {
+			xyDataset.addSeries(series[i]);
+		}
+
+		// création du graphique
+		title = "Algo k-means / k = " + this.k;
+		JFreeChart chart = ChartFactory.createScatterPlot(title, "X", "Y",
+				xyDataset, PlotOrientation.VERTICAL, false, false, false);
+
+		// affichage du graphique
+		ChartFrame frame = new ChartFrame("First", chart);
+		frame.pack();
+		frame.setVisible(true);
+
+		// sauvegarde du graphique en fichier png
+		file = fileUser + ".png";
+		try {
+			ChartUtilities.saveChartAsPNG(new File("graphique.jpg"), chart,
+					1000, 600);
+		} catch (IOException ioe) {
+			// erreur de fermeture des flux
+			System.out.println("Erreur --" + ioe.toString());
+		}
+
+	}
+
+	/**
 	 * Méthode prenant en paramètre un fichier texte contenant un tableau de
-	 * données et en sortant une ArrayList<ArrayList<Double>>
+	 * données et en sortant une ArrayList<ArrayList<Double>> méthode statique
+	 * pour pouvoir l'appeler sans instancier d'objet kmeans
 	 * 
 	 * @param filePath
-	 * @return
+	 *            : chemin du fichier à traiter
+	 * @return ArrayList<ArrayList<Double>> : chaque sous-liste est les
+	 *         coordonnées d'un individu
 	 */
-	public ArrayList<ArrayList<Double>> traitementTxt(String filePath,
+	public static ArrayList<ArrayList<Double>> traitementTxt(String filePath,
 			int nbLignesSauter) {
 
 		ArrayList<ArrayList<Double>> matrice = null;
@@ -276,64 +310,12 @@ public class kmeans {
 	}
 
 	/**
-	 * Méthode affichant un nuage de points d'une matrice traitée avec
-	 * JFreechart
-	 * 
-	 * @param matrice
-	 */
-	public void graphique(ArrayList<ArrayList<Double>> matrice) {
-		// variables locales
-		int i, j, cluster;
-		XYSeries[] series = null;
-		String name;
-
-		// création des différentes séries selon le nombre de cluster souhaité
-		for (i = 0; i < this.k; i++) {
-			name = "Cluster n° " + i;
-			series[i] = new XYSeries(name);
-		}
-
-		// récupérer les coordonnées de chaque individu
-		for (j = 0; j < matrice.size(); j++) {
-			// on récupère le numéro du cluster
-			cluster = (int) matrice.get(j).get(matrice.get(j).size() - 1)
-					.intValue();
-			// on récupère les coordonnées X et Y de l'individu
-			// et on les ajoute à la bonne série
-			series[cluster].add(matrice.get(j).get(0), matrice.get(j).get(1));
-		}
-
-		// création du XYDataset contenant toutes les séries
-		XYSeriesCollection xyDataset = new XYSeriesCollection();
-		for (i = 0; i < this.k; i++) {
-			xyDataset.addSeries(series[i]);
-		}
-
-		// création du graphique
-		JFreeChart chart = ChartFactory.createScatterPlot("Traitement k-means",
-				"X", "Y", xyDataset, PlotOrientation.HORIZONTAL, false, false,
-				false);
-
-		// affichage du graphique
-		ChartFrame frame = new ChartFrame("First", chart);
-		frame.pack();
-		frame.setVisible(true);
-
-		// sauvegarde du graphique en fichier jpeg
-		try {
-			ChartUtilities.saveChartAsJPEG(new File("graphique.jpg"), chart,
-					1000, 600);
-		} catch (IOException ioe) {
-			// erreur de fermeture des flux
-			System.out.println("Erreur --" + ioe.toString());
-		}
-
-	}
-
-	/**
 	 * main
 	 */
 	public static void main(String[] args) {
+
+		kmeans test = new kmeans(traitementTxt("exemple1.txt", 0), 2);
+		test.graphique(test.lancerAlgorithme(), "graphique_exemple1_k2");
 
 	}
 
