@@ -208,7 +208,7 @@ public class kmeans {
 	 * @param filePath
 	 * @return
 	 */
-	public ArrayList<ArrayList<Double>> traitementTxt(String filePath) {
+	public ArrayList<ArrayList<Double>> traitementTxt(String filePath, int nbLignesSauter) {
 
 		ArrayList<ArrayList<Double>> matrice = null;
 
@@ -237,6 +237,11 @@ public class kmeans {
 			// initialisation de la matrice
 			matrice = new ArrayList<ArrayList<Double>>(nbLignes);
 
+			// lecture des 4 premières lignes pour les "éviter'
+			for (int i = 0; i < nbLignesSauter; i++) {
+				line2 = buffDonnees.readLine();
+			}
+			
 			// lecture du fichier ligne par ligne
 			// cette boucle se termine quand la méthode retourne la valeur null
 			while ((line2 = buffDonnees.readLine()) != null) {
@@ -264,6 +269,14 @@ public class kmeans {
 	 * main
 	 */
 	public static void main(String[] args) {
+		kmeans testKmeans = new kmeans();
+		ArrayList<ArrayList<Double>> result = testKmeans.traitementTxt("ListeDesMoyennes.txt",1);
+		for(int i=0;i<result.size();i++) {
+			System.out.println("Ligne " + i);
+			for(int j=0;j<result.get(i).size();j++) {
+				System.out.println(result.get(i).get(j));
+			}
+		}
 
 	}
 
