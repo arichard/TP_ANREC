@@ -191,11 +191,11 @@ public class kmeans {
 	 * @param fileUser
 	 *            : nom du fichier PNG souhaité en sortie
 	 */
-	public void graphique(ArrayList<ArrayList<Double>> matrice, String fileUser) {
+	public void graphique(ArrayList<ArrayList<Double>> matrice, String fileTitleUser) {
 		// variables locales
 		int i, j, cluster;
 		XYSeries series[] = new XYSeries[this.k];
-		String name, title, file;
+		String name, title, fileName;
 
 		// création des différentes séries selon le nombre de cluster souhaité
 		for (i = 0; i < this.k; i++) {
@@ -230,9 +230,9 @@ public class kmeans {
 		frame.setVisible(true);
 
 		// sauvegarde du graphique en fichier png
-		file = fileUser + ".png";
+		fileName = fileTitleUser + ".png";
 		try {
-			ChartUtilities.saveChartAsPNG(new File("graphique.jpg"), chart,
+			ChartUtilities.saveChartAsPNG(new File(fileName), chart,
 					1000, 600);
 		} catch (IOException ioe) {
 			// erreur de fermeture des flux
@@ -314,8 +314,8 @@ public class kmeans {
 	 */
 	public static void main(String[] args) {
 
-		kmeans test = new kmeans(traitementTxt("exemple1.txt", 0), 2);
-		test.graphique(test.lancerAlgorithme(), "graphique_exemple1_k2");
+		kmeans test = new kmeans(traitementTxt("exemple2.txt", 0), 3);
+		test.graphique(test.lancerAlgorithme(), "graphique_exemple2_k3");
 
 	}
 
