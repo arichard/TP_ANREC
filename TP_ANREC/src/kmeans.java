@@ -1,7 +1,16 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  * 
@@ -208,7 +217,8 @@ public class kmeans {
 	 * @param filePath
 	 * @return
 	 */
-	public ArrayList<ArrayList<Double>> traitementTxt(String filePath, int nbLignesSauter) {
+	public ArrayList<ArrayList<Double>> traitementTxt(String filePath,
+			int nbLignesSauter) {
 
 		ArrayList<ArrayList<Double>> matrice = null;
 
@@ -241,7 +251,7 @@ public class kmeans {
 			for (int i = 0; i < nbLignesSauter; i++) {
 				line2 = buffDonnees.readLine();
 			}
-			
+
 			// lecture du fichier ligne par ligne
 			// cette boucle se termine quand la méthode retourne la valeur null
 			while ((line2 = buffDonnees.readLine()) != null) {
@@ -266,17 +276,64 @@ public class kmeans {
 	}
 
 	/**
+	 * Méthode affichant un nuage de points d'une matrice traitée avec
+	 * JFreechart
+	 * 
+	 * @param matrice
+	 */
+	public void graphique(ArrayList<ArrayList<Double>> matrice) {
+		// variables locales
+		int i, j, cluster;
+		XYSeries[] series = null;
+		String name;
+
+		// création des différentes séries selon le nombre de cluster souhaité
+		for (i = 0; i < this.k; i++) {
+			name = "Cluster n° " + i;
+			series[i] = new XYSeries(name);
+		}
+
+		// récupérer les coordonnées de chaque individu
+		for (j = 0; j < matrice.size(); j++) {
+			// on récupère le numéro du cluster
+			cluster = (int) matrice.get(j).get(matrice.get(j).size() - 1)
+					.intValue();
+			// on récupère les coordonnées X et Y de l'individu
+			// et on les ajoute à la bonne série
+			series[cluster].add(matrice.get(j).get(0), matrice.get(j).get(1));
+		}
+
+		// création du XYDataset contenant toutes les séries
+		XYSeriesCollection xyDataset = new XYSeriesCollection();
+		for (i = 0; i < this.k; i++) {
+			xyDataset.addSeries(series[i]);
+		}
+
+		// création du graphique
+		JFreeChart chart = ChartFactory.createScatterPlot("Traitement k-means",
+				"X", "Y", xyDataset, PlotOrientation.HORIZONTAL, false, false,
+				false);
+
+		// affichage du graphique
+		ChartFrame frame = new ChartFrame("First", chart);
+		frame.pack();
+		frame.setVisible(true);
+
+		// sauvegarde du graphique en fichier jpeg
+		try {
+			ChartUtilities.saveChartAsJPEG(new File("graphique.jpg"), chart,
+					1000, 600);
+		} catch (IOException ioe) {
+			// erreur de fermeture des flux
+			System.out.println("Erreur --" + ioe.toString());
+		}
+
+	}
+
+	/**
 	 * main
 	 */
 	public static void main(String[] args) {
-		kmeans testKmeans = new kmeans();
-		ArrayList<ArrayList<Double>> result = testKmeans.traitementTxt("ListeDesMoyennes.txt",1);
-		for(int i=0;i<result.size();i++) {
-			System.out.println("Ligne " + i);
-			for(int j=0;j<result.get(i).size();j++) {
-				System.out.println(result.get(i).get(j));
-			}
-		}
 
 	}
 
