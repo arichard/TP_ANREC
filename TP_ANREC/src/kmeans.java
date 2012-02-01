@@ -46,11 +46,14 @@ public class kmeans {
 	/**
 	 * Méthode de lancement de l'algorithme
 	 * 
+	 * @param similarite
+	 *            : true si on souhaite avoir le calcul de la norme de la
+	 *            matrice de similarité
 	 * @return ArrayList<ArrayList<Double>> : matrice où chaque ligne est un
 	 *         vecteur individu et la dernière colonne le numéro du cluster
 	 *         auquel appartient ledit individu
 	 */
-	public ArrayList<ArrayList<Double>> lancerAlgorithme() {
+	public ArrayList<ArrayList<Double>> lancerAlgorithme(boolean similarite) {
 		// On va regarder si le nombre de clusters souhaité n'est pas
 		// supérieur au nombre d'individus
 		if (this.k > this.Matrice.size()) {
@@ -99,6 +102,11 @@ public class kmeans {
 
 			// On lance la boucle déterminant l'appartenance pour chaque
 			// individu à un cluster
+
+			ArrayList<Integer> NbIndividusMatrix = new ArrayList<Integer>();
+			for (int h = 0; h < this.k; h++) {
+				NbIndividusMatrix.add(0);
+			}
 
 			while (CheckChange.contains(true)) {
 				// On affecte les n individus aux k clusters
@@ -178,6 +186,10 @@ public class kmeans {
 				}
 
 			}
+			if (similarite == true) {
+				this.similarity(M, noyauxClusters, NbIndividusMatrix);
+			}
+
 			return M;
 		}
 	}
@@ -191,7 +203,8 @@ public class kmeans {
 	 * @param fileUser
 	 *            : nom du fichier PNG souhaité en sortie
 	 */
-	public void graphique(ArrayList<ArrayList<Double>> matrice, String fileTitleUser) {
+	public void graphique(ArrayList<ArrayList<Double>> matrice,
+			String fileTitleUser) {
 		// variables locales
 		int i, j, cluster;
 		XYSeries series[] = new XYSeries[this.k];
@@ -232,13 +245,88 @@ public class kmeans {
 		// sauvegarde du graphique en fichier png
 		fileName = fileTitleUser + ".png";
 		try {
-			ChartUtilities.saveChartAsPNG(new File(fileName), chart,
-					1000, 600);
+			ChartUtilities.saveChartAsPNG(new File(fileName), chart, 1000, 600);
 		} catch (IOException ioe) {
 			// erreur de fermeture des flux
 			System.out.println("Erreur --" + ioe.toString());
 		}
 
+	}
+
+	/**
+	 * Calcul de similarité
+	 * 
+	 * @param M
+	 * @param noyauxClusters
+	 * @param NbIndividusMatrix
+	 */
+	public void similarity(ArrayList<ArrayList<Double>> M,
+			ArrayList<ArrayList<Double>> noyauxClusters,
+			ArrayList<Integer> NbIndividusMatrix) {
+
+		// Calcul de l'inertie au sein d'un groupe et de l'inertie totale
+		// intra-groupes
+		ArrayList<Double> InertiaWithinGroupMatrix = new ArrayList<Double>();
+		for (int h = 0; h < this.k; h++) {
+			InertiaWithinGroupMatrix.add((double) 0);
+		}
+		Double distance;
+		for (int i = 0; i < this.k; i++) { // Pour tous les groupes
+			for (int j = 0; j < this.Matrice.size(); j++) { // On balaye tous
+															// les individus
+				if (M.get(j).get(this.Matrice.get(0).size() - 1) == i) {
+					// Pour chaque individu appartenant au groupe correspondant
+					for (int p = 0; p < this.Matrice.get(0).size(); p++) {
+						// On calcule la distance au carré entre cet individu et
+						// le barycentre du groupe en question
+						distance = Math.pow(M.get(j).get(p)
+								- noyauxClusters.get(i).get(p), 2);
+						InertiaWithinGroupMatrix.set(i,
+								InertiaWithinGroupMatrix.get(i) + distance);
+					}
+				}
+			}
+		}
+
+		// Calcul de l'inertie totale Intra
+		Double TotalInertiaWithinGroups = 0.;
+		for (int i = 0; i < this.k; i++) {
+			TotalInertiaWithinGroups += InertiaWithinGroupMatrix.get(i);
+		}
+
+		// On va calculer d'abord les coordonnées du barycentre global
+		ArrayList<Double> Barycentre = new ArrayList<Double>();
+
+		for (int h = 0; h < this.Matrice.get(0).size(); h++) {
+			Barycentre.add((double) 0);
+		}
+		int Nbindividus = 0;
+		for (int i = 0; i < this.Matrice.size(); i++) {
+			Nbindividus++;
+			for (int g = 0; g < this.Matrice.get(0).size(); g++) {
+				Barycentre.set(g, Barycentre.get(g) + M.get(i).get(g));
+			}
+		}
+		// On divise la somme par le nombre total d'individus pour
+		// retomber sur un vrai barycentre
+		for (int g = 0; g < this.Matrice.get(0).size(); g++) {
+			Barycentre.set(g, Barycentre.get(g) / Nbindividus);
+		}
+		// Calcul de l'inertie totale Extra
+		Double TotalInertiaBetweenGroups = 0.;
+		for (int k = 0; k < this.k; k++) {
+			Double distancek;
+			for (int p = 0; p < this.Matrice.get(0).size(); p++) {
+				// On calcule la distance au carré entre le barycentre du groupe
+				// et le barycentre global
+				distancek = Math.pow(
+						noyauxClusters.get(k).get(p) - Barycentre.get(p), 2);
+				TotalInertiaBetweenGroups += distancek;
+			}
+		}
+		System.out.println("Inertie Total Intra Groupes : "
+				+ TotalInertiaWithinGroups + "\n"
+				+ "Inertie Total Inter Groupes : " + TotalInertiaBetweenGroups);
 	}
 
 	/**
@@ -292,8 +380,10 @@ public class kmeans {
 				// on découpe les lignes à chaque tabulation
 				temp = line2.split("\\t");
 				matrice.add(new ArrayList<Double>(temp.length));
-				// on utilise le paramètre permettant de sauter les x premières colonnes
-				// dans le cas où le jeu de données à une colonne de "titre" par exemple
+				// on utilise le paramètre permettant de sauter les x premières
+				// colonnes
+				// dans le cas où le jeu de données à une colonne de "titre" par
+				// exemple
 				for (int i = firstColumn; i < temp.length; i++) {
 					// on ajoute chaque valeur au bon endroit de la liste
 					matrice.get(index).add(Double.parseDouble(temp[i]));
@@ -316,8 +406,8 @@ public class kmeans {
 	 */
 	public static void main(String[] args) {
 
-		kmeans test = new kmeans(traitementTxt("ListeDesMoyennes.txt", 1, 1), 10);
-		test.graphique(test.lancerAlgorithme(), "moyenne_2");
+		kmeans test = new kmeans(traitementTxt("exemple2.txt", 0, 0), 8);
+		test.graphique(test.lancerAlgorithme(true), "moyenne_2");
 
 	}
 
