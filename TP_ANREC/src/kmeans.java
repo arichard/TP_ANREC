@@ -252,7 +252,7 @@ public class kmeans {
 	 *         coordonnées d'un individu
 	 */
 	public static ArrayList<ArrayList<Double>> traitementTxt(String filePath,
-			int nbLignesSauter) {
+			int nbLignesSauter, int firstColumn) {
 
 		ArrayList<ArrayList<Double>> matrice = null;
 
@@ -292,7 +292,9 @@ public class kmeans {
 				// on découpe les lignes à chaque tabulation
 				temp = line2.split("\\t");
 				matrice.add(new ArrayList<Double>(temp.length));
-				for (int i = 0; i < temp.length; i++) {
+				// on utilise le paramètre permettant de sauter les x premières colonnes
+				// dans le cas où le jeu de données à une colonne de "titre" par exemple
+				for (int i = firstColumn; i < temp.length; i++) {
 					// on ajoute chaque valeur au bon endroit de la liste
 					matrice.get(index).add(Double.parseDouble(temp[i]));
 				}
@@ -314,8 +316,8 @@ public class kmeans {
 	 */
 	public static void main(String[] args) {
 
-		kmeans test = new kmeans(traitementTxt("exemple2.txt", 0), 3);
-		test.graphique(test.lancerAlgorithme(), "graphique_exemple2_k3");
+		kmeans test = new kmeans(traitementTxt("ListeDesMoyennes.txt", 1, 1), 10);
+		test.graphique(test.lancerAlgorithme(), "moyenne_2");
 
 	}
 
